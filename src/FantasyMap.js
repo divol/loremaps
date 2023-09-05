@@ -101,7 +101,7 @@ class FantasyMap {
         let params = {
             page: title,
             action: 'parse',
-            prop: 'text',
+            prop: "text|categories|images|sections|displaytitle",
             redirects: true,
             format: 'json'
         };

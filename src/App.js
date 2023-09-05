@@ -1,4 +1,6 @@
 import "leaflet-sidebar/src/L.Control.Sidebar.css";
+import "./wikiaviolentextract.css";
+import "./fontswikiaviolentextract.css";
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Footer from "./Footer";
