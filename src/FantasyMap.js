@@ -92,16 +92,38 @@ class FantasyMap {
         return map;
     }
 
+
+    
     openWikiLink(title) {
+        const regex = /\/revision\/latest\?cb=(\d+)/gm;
+        const regex1 = /\?cb=(\d+)/gm;
+
+        async function reloadAllImg() {
+           
+            document.body.querySelectorAll(`img`)
+              .forEach((img) =>{
+                    img.src = img.src;
+                    console.log(img.src);
+                     fetch(img.src, { cache: 'reload', mode: 'no-cors' });
+                }
+                )
+          }
+
 
         this.sidebar.setContent("Loading...");
         this.sidebar.show();
 
         let url = new URL(this.options.wiki.apiUrl);
         let params = {
+            origin:'*',
+            crossorigin: 'anonymous',
+            referrerPolicy: 'no-referrer',
+           // SameSite: 'None;Secure',
+           SameSite: 'Strict',
             page: title,
             action: 'parse',
             prop: "text|categories|images|sections|displaytitle",
+        //    prop: "text|categories|images|sections|displaytitle",
             redirects: true,
             format: 'json'
         };
@@ -109,13 +131,23 @@ class FantasyMap {
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
         // TODO: try harder with CORS and fetch api https://www.mediawiki.org/wiki/API:Cross-site_requests
+        // href="https://forgottenrealms.fandom.com/wiki/
+        // /revision/latest/
+
         fetchJsonp(url.toString())
         .then(response => response.json())
         .then(json =>  json.parse.text['*'])
+        //.then(html => html.replaceAll(regex, ''))
+       // .then(html => html.replaceAll(regex1, ''))
+        .then(html => html.replaceAll('/wiki/', 'https://forgottenrealms.fandom.com/wiki/'))
         .then(html => this.sidebar.setContent(`<div>${html}</div>`))
+        //.then(_html => reloadAllImg())
+        .catch(_err =>  this.sidebar.setContent(" No references found for "+title))
         .catch(err => console.log('parsing failed', err));
+        
     }
-
+   
+    
     remove() {
         this.map.remove();
         this.map.off();
